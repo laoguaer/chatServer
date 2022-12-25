@@ -1,0 +1,47 @@
+[
+{
+  "directory": "/github/chat/build/src/server",
+  "command": "/usr/bin/g++  -I/github/chat/thirdparty -I/github/chat/include -I/github/chat/include/server -I/github/chat/include/server/db -I/github/chat/include/server/modle -g -g -o CMakeFiles/ChatServer.dir/chatserver.cpp.o -c /github/chat/src/server/chatserver.cpp",
+  "file": "/github/chat/src/server/chatserver.cpp"
+},
+{
+  "directory": "/github/chat/build/src/server",
+  "command": "/usr/bin/g++  -I/github/chat/thirdparty -I/github/chat/include -I/github/chat/include/server -I/github/chat/include/server/db -I/github/chat/include/server/modle -g -g -o CMakeFiles/ChatServer.dir/chatservice.cpp.o -c /github/chat/src/server/chatservice.cpp",
+  "file": "/github/chat/src/server/chatservice.cpp"
+},
+{
+  "directory": "/github/chat/build/src/server",
+  "command": "/usr/bin/g++  -I/github/chat/thirdparty -I/github/chat/include -I/github/chat/include/server -I/github/chat/include/server/db -I/github/chat/include/server/modle -g -g -o CMakeFiles/ChatServer.dir/main.cpp.o -c /github/chat/src/server/main.cpp",
+  "file": "/github/chat/src/server/main.cpp"
+},
+{
+  "directory": "/github/chat/build/src/server",
+  "command": "/usr/bin/g++  -I/github/chat/thirdparty -I/github/chat/include -I/github/chat/include/server -I/github/chat/include/server/db -I/github/chat/include/server/modle -g -g -o CMakeFiles/ChatServer.dir/db/db.cpp.o -c /github/chat/src/server/db/db.cpp",
+  "file": "/github/chat/src/server/db/db.cpp"
+},
+{
+  "directory": "/github/chat/build/src/server",
+  "command": "/usr/bin/g++  -I/github/chat/thirdparty -I/github/chat/include -I/github/chat/include/server -I/github/chat/include/server/db -I/github/chat/include/server/modle -g -g -o CMakeFiles/ChatServer.dir/modle/friendmodle.cpp.o -c /github/chat/src/server/modle/friendmodle.cpp",
+  "file": "/github/chat/src/server/modle/friendmodle.cpp"
+},
+{
+  "directory": "/github/chat/build/src/server",
+  "command": "/usr/bin/g++  -I/github/chat/thirdparty -I/github/chat/include -I/github/chat/include/server -I/github/chat/include/server/db -I/github/chat/include/server/modle -g -g -o CMakeFiles/ChatServer.dir/modle/groupmodle.cpp.o -c /github/chat/src/server/modle/groupmodle.cpp",
+  "file": "/github/chat/src/server/modle/groupmodle.cpp"
+},
+{
+  "directory": "/github/chat/build/src/server",
+  "command": "/usr/bin/g++  -I/github/chat/thirdparty -I/github/chat/include -I/github/chat/include/server -I/github/chat/include/server/db -I/github/chat/include/server/modle -g -g -o CMakeFiles/ChatServer.dir/modle/offlinemsgmodle.cpp.o -c /github/chat/src/server/modle/offlinemsgmodle.cpp",
+  "file": "/github/chat/src/server/modle/offlinemsgmodle.cpp"
+},
+{
+  "directory": "/github/chat/build/src/server",
+  "command": "/usr/bin/g++  -I/github/chat/thirdparty -I/github/chat/include -I/github/chat/include/server -I/github/chat/include/server/db -I/github/chat/include/server/modle -g -g -o CMakeFiles/ChatServer.dir/modle/usermodle.cpp.o -c /github/chat/src/server/modle/usermodle.cpp",
+  "file": "/github/chat/src/server/modle/usermodle.cpp"
+},
+{
+  "directory": "/github/chat/build/src/client",
+  "command": "/usr/bin/g++  -I/github/chat/thirdparty -I/github/chat/include -I/github/chat/include/server -I/github/chat/include/server/db -I/github/chat/include/server/modle -g -g -o CMakeFiles/ChatClient.dir/main.cpp.o -c /github/chat/src/client/main.cpp",
+  "file": "/github/chat/src/client/main.cpp"
+}
+]
