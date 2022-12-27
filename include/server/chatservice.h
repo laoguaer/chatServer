@@ -56,6 +56,7 @@ private:
 	ChatService();
 	unordered_map<int, MsgHandler> _msgHandlerMap;
 	unordered_map<int, TcpConnectionPtr> _userConnMap;
+	unordered_map<TcpConnectionPtr, int> _TcpConnMap;
 	mutex _connMutex;
 
 	UserModle _usermodle;

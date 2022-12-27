@@ -58,6 +58,7 @@ void ChatService::login(const TcpConnectionPtr &conn, json &js, Timestamp) {
 		{
 			lock_guard<mutex> lock(_connMutex);
 			_userConnMap.insert({id, conn});
+			_TcpConnMap.insert({conn, id});
 		}
 
 		user.setState("online");
@@ -95,12 +96,13 @@ void ChatService::logout(const TcpConnectionPtr &conn, json &js, Timestamp) {
 	User user;
 	int id = js["id"];
 	user.setId(id);
+	// 查找 _userConnMap 中有无id
 	{
         lock_guard<mutex> lock(_connMutex);
-		
         auto it = _userConnMap.find(id);
 		if (it != _userConnMap.end()) {
 			_userConnMap.erase(it);
+			_TcpConnMap.erase(it->second);
 		}
     }
 
@@ -163,20 +165,17 @@ void ChatService::addFriend(const TcpConnectionPtr &conn, json &js, Timestamp) {
 
 
 void ChatService::clientCloseException(const TcpConnectionPtr &conn) {
-	LOG_DEBUG << "clientCLostException";
+	LOG_INFO << "clientCLostException";
+	
 	User user;
 	{
         lock_guard<mutex> lock(_connMutex);
-        for (auto it = _userConnMap.begin(); it != _userConnMap.end(); ++it)
-        {
-            if (it->second == conn)
-            {
-                // 从map表删除用户的链接信息
-				user.setId(it->first);
-                _userConnMap.erase(it);
-                break;
-            }
-        }
+        auto it = _TcpConnMap.find(conn);
+		if (it != _TcpConnMap.end()) {
+			_TcpConnMap.erase(it);
+			user.setId(it->second);
+			_userConnMap.erase(it->second);
+		}
     }
 
 	if (user.getId() != -1) {
