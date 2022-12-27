@@ -9,6 +9,7 @@
 #include "offlinemsgmodle.h"
 #include "friendmodle.h"
 #include "groupmodle.h"
+#include "redis.h"
 
 #include "json.hpp"
 using json = nlohmann::json;
@@ -46,6 +47,9 @@ public:
 	// 发送群消息
 	void groupChat(const TcpConnectionPtr &conn, json &js, Timestamp);
 
+	// 从redis通道中获取消息
+	void handleRedisSubscribeMessage(int id, string msg);
+
 
 	MsgHandler getHandler(int msgid);
 private:
@@ -58,6 +62,7 @@ private:
 	OfflineMsgModle _offlinemsgmodle;
 	FriendModle _friendModle;
 	GroupModle _groupmodle;
+	Redis _redis;
 };
 
 #endif

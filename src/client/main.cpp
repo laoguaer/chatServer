@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
 			int len = send(clientfd, res.c_str(), res.size() + 1, 0);
 			if (len == -1) {
 				cerr << "send message erro: " << res << endl;
-			} 
+			}
 		
 			unique_lock<mutex> lock(resMutex);
 			cv.wait(lock);
@@ -202,17 +202,20 @@ void readTaskHandler(int clientfd) {
 			}
 		} else if (LOGIN_MSG_ACK == recvjs["msgid"]) {
 			
-			
 			if (recvjs["errno"] != 0) {
-				cerr << "login failed : " << recvjs["errmsg"] << endl;
-				cv.notify_one();
-				return;
+				cout << "login failed : " << recvjs["errmsg"] << endl;
+				cv.notify_all();
+				continue;
 			}
 			string name = recvjs["name"];
 						
 			g_curUser.setId(recvjs["id"]);
 			g_curUser.setName(recvjs["name"]);
 			g_curUser.setState("online");
+
+			g_friendList.clear();
+			g_groupList.clear();
+			g_offlinemsgList.clear();
 			
 			vector<string> grouplist = recvjs["group"];
 			vector<string> friendlist = recvjs["friend"];
@@ -288,6 +291,8 @@ void MainMenu(int clientfd) {
 		it->second(clientfd, cmdbuf.substr(idx + 1));
 	}
 }
+
+
 
 void help(int, string) {
 	for (auto &item : commandMap) {

@@ -1,6 +1,7 @@
 #include "chatservice.h"
 #include "public.h"
 #include <muduo/base/Logging.h>
+#include <string>
 using namespace muduo;
 
 
@@ -18,6 +19,10 @@ ChatService::ChatService() {
 	_msgHandlerMap.insert({ADDINTO_GROUP_MSG, std::bind(&ChatService::addintoGroup, this, _1, _2, _3)});
 	_msgHandlerMap.insert({GROUP_CHAT_MSG, std::bind(&ChatService::groupChat, this, _1, _2, _3)});
 	_msgHandlerMap.insert({LOGOUT_MSG, std::bind(&ChatService::logout, this, _1, _2, _3)});
+
+	if (_redis.connect()) {
+		_redis.init_notify_handler(std::bind(&ChatService::handleRedisSubscribeMessage, this, _1, _2));
+	}
 }
 
 MsgHandler ChatService::getHandler(int msgid) {
@@ -57,6 +62,8 @@ void ChatService::login(const TcpConnectionPtr &conn, json &js, Timestamp) {
 
 		user.setState("online");
 		_usermodle.updateState(user);
+
+		_redis.subscribe(user.getId());
 
 		json res;
 		vector<string> offlineMsgvec;
@@ -100,6 +107,8 @@ void ChatService::logout(const TcpConnectionPtr &conn, json &js, Timestamp) {
 	if (user.getId() != -1) {
 		user.setState("offline");
 		_usermodle.updateState(user);
+
+		_redis.unsubscribe(user.getId());
 	}
 }
 void ChatService::reg(const TcpConnectionPtr &conn, json &js, Timestamp) {
@@ -137,6 +146,11 @@ void ChatService::oneChat(const TcpConnectionPtr &conn, json &js, Timestamp) {
 			return;
 		}
 	}
+	User user = _usermodle.query(toid);
+	if (user.getState() == "online") {
+		_redis.publish(user.getId(), js.dump());
+		return;
+	}
 		// 对方离线 发送离线消息
 	_offlinemsgmodle.insert(toid, js.dump());
 }
@@ -149,6 +163,7 @@ void ChatService::addFriend(const TcpConnectionPtr &conn, json &js, Timestamp) {
 
 
 void ChatService::clientCloseException(const TcpConnectionPtr &conn) {
+	LOG_DEBUG << "clientCLostException";
 	User user;
 	{
         lock_guard<mutex> lock(_connMutex);
@@ -167,6 +182,8 @@ void ChatService::clientCloseException(const TcpConnectionPtr &conn) {
 	if (user.getId() != -1) {
 		user.setState("offline");
 		_usermodle.updateState(user);
+
+		_redis.unsubscribe(user.getId());
 	}
 }
 void ChatService::resetState() {
@@ -211,13 +228,31 @@ void ChatService::groupChat(const TcpConnectionPtr &conn, json &js, Timestamp) {
 	for (auto &user : userVec) {
 		auto it = _userConnMap.find(user.getId());
 		if (it == _userConnMap.end()) {
+
 			// 发送离线消息
-			printf("离线消息\n");
+			if (user.getState() == "online") {
+				_redis.publish(user.getId(), js.dump());
+				return;
+			}
 			_offlinemsgmodle.insert(user.getId(), js.dump());
 		} else {
 			// 发送在线消息
-			printf("在线消息\n");
 			it->second->send(js.dump());
 		}
 	}
+}
+
+// 从redis消息队列中获取订阅的消息
+void ChatService::handleRedisSubscribeMessage(int userid, string msg)
+{
+    lock_guard<mutex> lock(_connMutex);
+    auto it = _userConnMap.find(userid);
+    if (it != _userConnMap.end())
+    {
+        it->second->send(msg);
+        return;
+    }
+
+    // 存储该用户的离线消息
+    _offlinemsgmodle.insert(userid, msg);
 }
