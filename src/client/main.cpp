@@ -219,7 +219,7 @@ void readTaskHandler(int clientfd) {
 			
 			vector<string> grouplist = recvjs["group"];
 			vector<string> friendlist = recvjs["friend"];
-			g_offlinemsgList = (vector<string>)recvjs["offlinemsg"];
+			vector<string> offlinemsglist = recvjs["offlinemsg"];
 
 			for (string& grp : grouplist) {
 				json t = json::parse(grp);
@@ -235,6 +235,10 @@ void readTaskHandler(int clientfd) {
 				string name = t["name"];
 				string state = t["state"];
 				g_friendList.emplace_back(id, name, "", state);
+			}
+
+			for (string &msg : offlinemsglist) {
+				g_offlinemsgList.emplace_back(msg);
 			}
 			isLogin = true;
 			cv.notify_one();
