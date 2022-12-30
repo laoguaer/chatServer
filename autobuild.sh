@@ -3,5 +3,5 @@ mkdir build
 rm -rf `pwd`/build/*
 cd build
 cmake ..
-make
+make -j 4
 cd ..

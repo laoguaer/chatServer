@@ -163,7 +163,7 @@ void ChatService::addFriend(const TcpConnectionPtr &conn, json &js, Timestamp) {
 	_friendModle.insert(userid, friendid);
 }
 
-
+//  客户端退出
 void ChatService::clientCloseException(const TcpConnectionPtr &conn) {
 	LOG_INFO << "clientCLostException";
 	
