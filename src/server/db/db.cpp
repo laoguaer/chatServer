@@ -1,6 +1,7 @@
 #include "db.h"
 #include <string>
-#include <muduo/base/Logging.h>
+// #include <muduo/base/Logging.h>
+#include <mymuduo/logger.h>
 using namespace std;
 
 // 数据库配置信息
@@ -21,16 +22,34 @@ MySQL::~MySQL()
 }
 
 // 连接数据库
-bool MySQL::connect()
+bool MySQL::connect(string ip, unsigned short port, 
+	string username, string password, string dbname)
 {
-	MYSQL *p = mysql_real_connect(_conn, server.c_str(), user.c_str(),
-	password.c_str(), dbname.c_str(), 3306, nullptr, 0);
+	// 连接数据库
+	MYSQL *p = mysql_real_connect(_conn, ip.c_str(), username.c_str(),
+		password.c_str(), dbname.c_str(), port, nullptr, 0);
 	if (p != nullptr)
 	{
-		mysql_query(_conn, "set names gbk");
-		LOG_INFO << "connect mysql" ;
+		// mysql_query(_conn, "set names gbk");
+		// LOG_INFO << "connect mysql" ;
+		//LOG_INFO("connect mysql");
 	}
 	return p;
+}
+
+// 连接数据库
+bool MySQL::connect()
+{
+	// 连接数据库
+	MYSQL *p = mysql_real_connect(_conn, "127.0.0.1", user.c_str(),
+		password.c_str(), dbname.c_str(), 3306, nullptr, 0);
+	if (p != nullptr)
+	{
+		// mysql_query(_conn, "set names gbk");
+		// LOG_INFO << "connect mysql" ;
+		// LOG_INFO("connect mysql");
+	}
+	return p != nullptr;
 }
 
 // 更新操作
@@ -38,8 +57,9 @@ bool MySQL::update(string sql)
 {
 	if (mysql_query(_conn, sql.c_str()))
 	{
-		LOG_INFO << __FILE__ << ":" << __LINE__ << ":"
-		<< sql << "更新失败!";
+		// LOG_INFO << __FILE__ << ":" << __LINE__ << ":"
+		// << sql << "更新失败!";
+		LOG_INFO("%s:%d:sql更新失败", __FILE__, __LINE__);
 		return false;
 	}
 	return true;
@@ -50,8 +70,9 @@ MYSQL_RES* MySQL::query(string sql)
 {
 	if (mysql_query(_conn, sql.c_str()))
 	{
-		LOG_INFO << __FILE__ << ":" << __LINE__ << ":"
-		<< sql << "查询失败!";
+		// LOG_INFO << __FILE__ << ":" << __LINE__ << ":"
+		// << sql << "查询失败!";
+		LOG_INFO("%s:%d:sql查询失败",__FILE__, __LINE__);
 		return nullptr;
 	}
 	return mysql_use_result(_conn);

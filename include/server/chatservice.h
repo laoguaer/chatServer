@@ -1,10 +1,13 @@
 #ifndef CHATSERVICE_H
 #define CHATSERVICE_H
 
-#include <muduo/net/TcpConnection.h>
+// #include <muduo/net/TcpConnection.h>
+#include <mymuduo/TcpConnection.h>
 #include <unordered_map>
 #include <functional>
 #include <mutex>
+
+
 #include "usermodle.h"
 #include "offlinemsgmodle.h"
 #include "friendmodle.h"
@@ -15,8 +18,8 @@
 using json = nlohmann::json;
 
 using namespace std;
-using namespace muduo;
-using namespace muduo::net;
+// using namespace muduo;
+// using namespace muduo::net;
 
 using MsgHandler = std::function<void(const TcpConnectionPtr &conn, json &js, Timestamp)>;
 

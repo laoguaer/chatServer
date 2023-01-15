@@ -1,9 +1,12 @@
 #include "chatservice.h"
 #include "public.h"
-#include <muduo/base/Logging.h>
-#include <string>
-using namespace muduo;
 
+
+// #include <muduo/base/Logging.h>
+#include <mymuduo/logger.h>
+#include <string>
+// using namespace muduo;
+using namespace std::placeholders;
 
 ChatService* ChatService::instance() {
 	static ChatService service;
@@ -29,7 +32,8 @@ MsgHandler ChatService::getHandler(int msgid) {
 	auto it = _msgHandlerMap.find(msgid);
 	if (it == _msgHandlerMap.end()) {
 		return [=](const TcpConnectionPtr &conn, json &js, Timestamp) {
-			LOG_ERROR << "msgid: " << msgid << " can't find handler!";
+			// LOG_ERROR << "msgid: " << msgid << " can't find handler!";
+			LOG_ERROR("msgid:%d can't find handler!", msgid);
 		};
 	} else {
 		return _msgHandlerMap[msgid];
@@ -137,14 +141,18 @@ void ChatService::reg(const TcpConnectionPtr &conn, json &js, Timestamp) {
 	}
 }
 
-void ChatService::oneChat(const TcpConnectionPtr &conn, json &js, Timestamp) {
+void ChatService::oneChat(const TcpConnectionPtr &conn, json &js, Timestamp now) {
 	int toid = js["to"];
 	{
 		// 对方在线 发送在线消息
-		lock_guard<mutex> lock(_connMutex);
+		unique_lock<mutex> lock(_connMutex);
 		auto it = _userConnMap.find(toid);
 		if (it != _userConnMap.end()) {
-			it->second->send(js.dump());
+			json temp = js;
+			printf("oneChat:%s\n",temp.dump().c_str());
+			// it->second->send(temp.dump());
+			auto ptr = it->second;
+			(*ptr).send(js.dump());
 			return;
 		}
 	}
@@ -165,7 +173,8 @@ void ChatService::addFriend(const TcpConnectionPtr &conn, json &js, Timestamp) {
 
 //  客户端退出
 void ChatService::clientCloseException(const TcpConnectionPtr &conn) {
-	LOG_INFO << "clientCLostException";
+	// LOG_INFO << "clientCLostException";
+	LOG_INFO(" ");
 	
 	User user;
 	{

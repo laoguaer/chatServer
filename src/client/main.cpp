@@ -182,13 +182,16 @@ void ShowCommonInfo() {
 }
 
 void readTaskHandler(int clientfd) {
+	char buf[1024] = {0};
 	for (;;) {
-		char buf[1024] = {0};
-		int len = recv(clientfd, buf, 1024, 0);
+		memset(buf, 0, 1024);
+		// int len = recv(clientfd, buf, 1024, 0);
+		int len = ::read(clientfd, buf, 1024);
 		if (len == 0 || len == -1) {
 			close(clientfd);
 			exit(-1);
 		}
+		printf("%lu:%s\n", strlen(buf), buf);
 		json recvjs = json::parse(buf);
 		if (ONE_CHAT_MSG == recvjs["msgid"]) {
 			cout << "new user msg -- from user" << recvjs["name"] << " said: "<< recvjs["msg"] << endl;

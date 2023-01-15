@@ -13,7 +13,8 @@ int main(int argc, char **argv) {
 	signal(SIGINT, resetHandler);
 	int port = atoi(argv[2]);
 	EventLoop loop;
-	InetAddress addr(argv[1], port);
+	// InetAddress addr(argv[1], port);
+	InetAddress addr(port, argv[1]);
 	ChatServer server(&loop, addr, "chatserver");
 	server.start();
 	loop.loop();
