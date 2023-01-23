@@ -2,7 +2,7 @@
 #define OFFLINEMSGMODLE_H
 
 #include <vector>
-#include "db.h"
+#include "connectionpool.h"
 
 class OfflineMsgModle {
 public:

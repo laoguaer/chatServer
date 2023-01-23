@@ -1,9 +1,12 @@
 #ifndef GROUPMODLE_H
 #define GROUPMODLE_H
-#include "group.h"
-#include "db/db.h"
+
 #include <vector>
+
+#include "group.h"
+#include "connectionpool.h"
 #include "json.hpp"
+
 using json = nlohmann::json;
 class GroupModle {
 public:

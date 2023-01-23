@@ -3,19 +3,25 @@
 using namespace std;
 #include "connectionpool.h"
 
+
 int main()
 {
 	clock_t begin;
+	mysql_library_init(0, NULL, NULL);
 
 
 // #if 0
 {
 	begin = clock();
+	int cnt = 0;
 	for (int i = 0; i < 1000; ++i)
 	{
 		MySQL conn;
-		conn.connect("127.0.0.1", 3306, "root", "123456", "chat");
+		if (!conn.connect("127.0.0.1", 3306, "root", "123456", "chat")) {
+			cnt++;
+		}
 	}
+	printf("%d\n", cnt);
 	std::cout << "1000 1thread without pool: " << (double)(clock() - begin) / CLOCKS_PER_SEC << endl;
 }
 // #endif 
@@ -26,23 +32,19 @@ int main()
 	begin = clock();
 
 
-	thread t[16];
+	thread t[5];
 	for (int i = 0; i < 5; ++i) {
-		MySQL conn;
-		conn.connect();
-		t[i] = thread([]{
-			int cnt = 0;
-			for (int j = 0; j < 200; j++) {
+		t[i] = thread([]() {
+			for (int i = 0; i < 200; ++i) {
 				MySQL conn;
-				if (conn.connect()) {
-					++cnt;
-				}
+				conn.connect();
 			}
-			printf("%d\n", cnt);
 		});
 	}
-	for (int i = 0; i < 16; ++i) {
-		t[i].join();
+	for (int i = 0; i < 5; ++i) {
+		if (t[i].joinable()) {
+			t[i].join();
+		}
 	}
 
 	clock_t end = clock();
@@ -72,13 +74,16 @@ int main()
 		});
 	}
 	for (int i = 0; i < 4; ++i) {
-		t[i].join();
+		if (t[i].joinable()) {
+			t[i].join();
+		}
 	}
 
 	clock_t end = clock();
 	std::cout << "1000 4thread with pool: " << (double)(end - begin) / CLOCKS_PER_SEC << endl;
 }
 // #endif
+	mysql_library_end();
 	return 0;
 }
 

@@ -14,11 +14,15 @@ static string dbname = "chat";
 MySQL::MySQL()
 {
 	_conn = mysql_init(nullptr);
+	mysql_thread_init();
 }
 MySQL::~MySQL()
 {
 	if (_conn != nullptr)
-	mysql_close(_conn);
+	{
+		mysql_close(_conn);
+		mysql_thread_end();
+	}
 }
 
 // 连接数据库
@@ -28,13 +32,13 @@ bool MySQL::connect(string ip, unsigned short port,
 	// 连接数据库
 	MYSQL *p = mysql_real_connect(_conn, ip.c_str(), username.c_str(),
 		password.c_str(), dbname.c_str(), port, nullptr, 0);
-	if (p != nullptr)
+	if (p == nullptr)
 	{
 		// mysql_query(_conn, "set names gbk");
 		// LOG_INFO << "connect mysql" ;
 		//LOG_INFO("connect mysql");
 	}
-	return p;
+	return p != nullptr;
 }
 
 // 连接数据库

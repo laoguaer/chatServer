@@ -2,7 +2,7 @@
 #define FRIENDMODLE_H
 #include <vector>
 #include <string>
-#include "db.h"
+#include "connectionpool.h"
 using namespace std;
 
 class FriendModle {
